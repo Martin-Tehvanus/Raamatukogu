@@ -26,10 +26,22 @@ async function insertAuthors() {
   for (let i = 0; i < AUTHOR_COUNT; i += BATCH_SIZE) {
     const values = [];
     for (let j = 0; j < BATCH_SIZE && i + j < AUTHOR_COUNT; j++) {
+      let date;
+      while (true) {
+        date = faker.date.past();
+        // Kontrolli DST "auku" (nt 2025-03-30 03:00–03:59)
+        const d = new Date(date);
+        const y = d.getUTCFullYear();
+        const m = d.getUTCMonth() + 1;
+        const day = d.getUTCDate();
+        const h = d.getUTCHours();
+        // Eesti DST 2025: 2025-03-30 03:00–03:59 ei eksisteeri
+        if (!(y === 2025 && m === 3 && day === 30 && h === 3)) break;
+      }
       values.push([
         faker.person.fullName(),
         faker.lorem.sentence(),
-        faker.date.past().toISOString().slice(0, 19).replace('T', ' '),
+        date.toISOString().slice(0, 19).replace('T', ' '),
       ]);
     }
     await pool.query(
@@ -44,10 +56,20 @@ async function insertMembers() {
   for (let i = 0; i < MEMBER_COUNT; i += BATCH_SIZE) {
     const values = [];
     for (let j = 0; j < BATCH_SIZE && i + j < MEMBER_COUNT; j++) {
+      let date;
+      while (true) {
+        date = faker.date.past();
+        const d = new Date(date);
+        const y = d.getUTCFullYear();
+        const m = d.getUTCMonth() + 1;
+        const day = d.getUTCDate();
+        const h = d.getUTCHours();
+        if (!(y === 2025 && m === 3 && day === 30 && h === 3)) break;
+      }
       values.push([
         faker.person.fullName(),
         faker.internet.email(),
-        faker.date.past().toISOString().slice(0, 19).replace('T', ' '),
+        date.toISOString().slice(0, 19).replace('T', ' '),
       ]);
     }
     await pool.query(
@@ -63,12 +85,31 @@ async function insertBooks() {
     const values = [];
     for (let j = 0; j < BATCH_SIZE && i + j < BOOK_COUNT; j++) {
       const authorId = faker.number.int({ min: 1, max: AUTHOR_COUNT });
+      let publishedDate, addedTime;
+      while (true) {
+        publishedDate = faker.date.past();
+        const d = new Date(publishedDate);
+        const y = d.getUTCFullYear();
+        const m = d.getUTCMonth() + 1;
+        const day = d.getUTCDate();
+        const h = d.getUTCHours();
+        if (!(y === 2025 && m === 3 && day === 30 && h === 3)) break;
+      }
+      while (true) {
+        addedTime = faker.date.past();
+        const d = new Date(addedTime);
+        const y = d.getUTCFullYear();
+        const m = d.getUTCMonth() + 1;
+        const day = d.getUTCDate();
+        const h = d.getUTCHours();
+        if (!(y === 2025 && m === 3 && day === 30 && h === 3)) break;
+      }
       values.push([
         faker.lorem.words({ min: 2, max: 6 }),
         authorId,
         faker.lorem.paragraph(),
-        faker.date.past().toISOString().slice(0, 10),
-        faker.date.past().toISOString().slice(0, 19).replace('T', ' '),
+        publishedDate.toISOString().slice(0, 10),
+        addedTime.toISOString().slice(0, 19).replace('T', ' '),
       ]);
     }
     await pool.query(
@@ -85,14 +126,32 @@ async function insertLoans() {
     for (let j = 0; j < BATCH_SIZE && i + j < LOAN_COUNT; j++) {
       const bookId = faker.number.int({ min: 1, max: BOOK_COUNT });
       const memberId = faker.number.int({ min: 1, max: MEMBER_COUNT });
-      const loanedDate = faker.date.past();
+      let loanedDate;
+      while (true) {
+        loanedDate = faker.date.past();
+        const d = new Date(loanedDate);
+        const y = d.getUTCFullYear();
+        const m = d.getUTCMonth() + 1;
+        const day = d.getUTCDate();
+        const h = d.getUTCHours();
+        if (!(y === 2025 && m === 3 && day === 30 && h === 3)) break;
+      }
       const dueDate = new Date(loanedDate);
       dueDate.setDate(dueDate.getDate() + faker.number.int({ min: 7, max: 30 }));
       let returnedDate = null;
       if (faker.datatype.boolean()) {
-        returnedDate = new Date(loanedDate);
-        returnedDate.setDate(returnedDate.getDate() + faker.number.int({ min: 1, max: 60 }));
-        returnedDate = returnedDate.toISOString().slice(0, 10);
+        let retDate;
+        while (true) {
+          retDate = new Date(loanedDate);
+          retDate.setDate(retDate.getDate() + faker.number.int({ min: 1, max: 60 }));
+          const d = new Date(retDate);
+          const y = d.getUTCFullYear();
+          const m = d.getUTCMonth() + 1;
+          const day = d.getUTCDate();
+          const h = d.getUTCHours();
+          if (!(y === 2025 && m === 3 && day === 30 && h === 3)) break;
+        }
+        returnedDate = retDate.toISOString().slice(0, 10);
       }
       values.push([
         bookId,
