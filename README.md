@@ -3,7 +3,6 @@
 ## Eeldused
 - MySQL/MariaDB v8+ (soovitatav Dockeriga)
 - Bun (https://bun.sh)
-- Node.js teek: mysql2, @faker-js/faker
 - dump.sql skeem olemas
 - .env fail (DB_HOST, DB_USER, DB_PASS, DB_NAME)
 
