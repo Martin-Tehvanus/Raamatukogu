@@ -1,4 +1,4 @@
-# Raamatukogu seemendaja
+# Raamatukogu
 
 ## Eeldused
 - MySQL/MariaDB v8+ (soovitatav Dockeriga)
