@@ -1,4 +1,4 @@
-# Raamatukogu seemendaja
+# Raamatukogu
 
 ## Eeldused
 - MySQL/MariaDB v8+ (soovitatav Dockeriga)
@@ -19,10 +19,12 @@
    docker exec -i mysql mysql -u root -psalasõna Raamatukogu < dump.sql
    ```
 
-2. **Seemnesõltuvuste paigaldus**
+
+2. **Kõigi Eelduste paigaldus**
    ```sh
-   bun add mysql2 @faker-js/faker
+   bun install
    ```
+   See paigaldab kõik vajalikud teegid automaatselt package.json põhjal.
 
 3. **Seemneskripti käivitamine**
    ```sh
@@ -53,7 +55,9 @@
 - Vajadusel vähenda BATCH_SIZE väärtust skriptis
 
 ---
+-
 Repo struktuur:
 - dump.sql
 - seed.ts
 - README.md
+- package.json
