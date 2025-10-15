@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: mysql:8.0
@@ -7,16 +5,16 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: library
+      MYSQL_DATABASE: Raamatukogu
       MYSQL_USER: library_user
       MYSQL_PASSWORD: library_pass
-    ports:
-      - "3306:3306"
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - library-network
 
   phpmyadmin:
     image: phpmyadmin:latest
@@ -30,3 +28,9 @@ services:
       - "8080:80"
     depends_on:
       - db
+    networks:
+      - library-network
+
+networks:
+  library-network:
+    driver: bridge
