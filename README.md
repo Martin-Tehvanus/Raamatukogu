@@ -30,6 +30,18 @@
    bun run seed.ts
    ```
 
+### Docker Compose variandina
+- Kohanda `.env` (vaikimisi sobib hostilt ühendudes: `DB_HOST=localhost`).
+- Käivita teenused:
+  ```sh
+  docker compose up -d
+  ```
+- Lae skeem konteinerisse:
+  ```sh
+  docker exec -i library-mysql mysql -uroot -p"$env:DB_PASS" "$env:DB_NAME" < dump.sql
+  ```
+  PowerShellis asenda keskkonnamuutujad vastavalt; Bashis kasuta `$DB_PASS`/`$DB_NAME`.
+
 ## Oodatav tulemus
 - Tabelis `Book` on vähemalt 2 000 000 rida
 - Tabelis `Author` ~100 000 rida
@@ -41,7 +53,16 @@
 - Lahendus on reprodutseeritav (fikseeritud seeme)
 
 ## Kestus
-- Sõltub masinast, eeldatavalt 10-60 minutit
+- Sõltub masinast; eeldatavalt 10–60 minutit
+
+## Optimeerimise strateegia
+- Sisestuse ajal (sessioonipõhised seaded):
+  - `SET FOREIGN_KEY_CHECKS=0`
+  - `SET UNIQUE_CHECKS=0`
+  - `SET autocommit=0`
+- Partiipõhised transaktsioonid iga batch’i kohta (`BEGIN`/`COMMIT`).
+- Sõltumatud osad paralleelselt: `Author` + `Member` sisestatakse `Promise.all` abil.
+- Pärast sisestust taastatakse seaded (`=1`).
 
 ## Ehtsuse ja tervikluse kirjeldus
 - Nimed, e-kirjad, kuupäevad, kirjeldused on genereeritud fakeriga
