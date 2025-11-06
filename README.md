@@ -42,6 +42,60 @@
   ```
   PowerShellis asenda keskkonnamuutujad vastavalt; Bashis kasuta `$DB_PASS`/`$DB_NAME`.
 
+## Kiirstart (nullist)
+Alljärgnev sobib algajale – samm-sammult, kuni andmed on sees.
+
+1) Klooni repo oma masinasse
+```sh
+git clone https://github.com/Martin-Tehvanus/Raamatukogu
+cd Raamatukogu
+```
+
+2) Paigalda tööriistad
+- Installi Docker Desktop ja veendu, et see töötab (WSL2 Windowsis).
+- Installi Bun (https://bun.sh) ja Git.
+
+3) Loo `.env` fail (samasse kausta)
+```env
+DB_HOST=localhost
+DB_USER=root
+DB_PASS=rootpass
+DB_NAME=Raamatukogu
+```
+
+4) Käivita andmebaas konteineris
+```sh
+docker compose up -d
+```
+
+5) Lae skeem konteinerisse (vali sobiv käsuvariant)
+- Windows PowerShell:
+```powershell
+docker exec -i library-mysql mysql -uroot -p"$env:DB_PASS" "$env:DB_NAME" < dump.sql
+```
+- Bash (macOS/Linux):
+```bash
+docker exec -i library-mysql mysql -uroot -p"$DB_PASS" "$DB_NAME" < dump.sql
+```
+
+6) Paigalda sõltuvused ja käivita seemendus
+```sh
+bun install
+bun run seed.ts
+```
+
+7) Kontrolli, et read on sees (vali üks)
+- MySQL CLI konteineris:
+```sh
+docker exec -it library-mysql mysql -uroot -p"$DB_PASS" -e "SELECT COUNT(*) AS Authors FROM Author; SELECT COUNT(*) AS Members FROM Member; SELECT COUNT(*) AS Books FROM Book; SELECT COUNT(*) AS Loans FROM Loan;" "$DB_NAME"
+```
+- phpMyAdmin: ava brauseris http://localhost:8080 (user: `root`, pass: `.env` DB_PASS), vaata tabelite COUNT().
+
+8) Peata teenused (soovi korral)
+```sh
+docker compose down
+```
+
 ## Oodatav tulemus
 - Tabelis `Book` on vähemalt 2 000 000 rida
 - Tabelis `Author` ~100 000 rida
